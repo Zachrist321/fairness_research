@@ -1,0 +1,54 @@
+{
+  "experiment_version": "v1-scaled-3900",
+  "design_note": "Agreed scaled design (not the paper's full 57,600 or the mistaken 13,608 build). 108 prompts × 4 representative hyperparameter conditions × 3 seeds × 3 models = 3,888 generations.",
+  "drive_root": "/content/drive/MyDrive/fairness_research",
+  "models": {
+    "generators": [
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "mistralai/Mistral-7B-Instruct-v0.3",
+      "Qwen/Qwen2.5-7B-Instruct"
+    ],
+    "judge_primary": "meta-llama/Llama-3.1-8B-Instruct",
+    "judge_secondary": "mistralai/Mistral-7B-Instruct-v0.3",
+    "embedding": "sentence-transformers/all-mpnet-base-v2"
+  },
+  "prompts_file": "prompts/prompts_v1.csv",
+  "seeds": [42, 123, 456],
+  "generation": {
+    "max_new_tokens": 400,
+    "do_sample": true,
+    "load_in_4bit": true
+  },
+  "hyperparameter_grid": [
+    {"temperature": 0.3, "top_p": 1.0, "grid_step": "A", "label": "low_temperature"},
+    {"temperature": 1.5, "top_p": 1.0, "grid_step": "A", "label": "high_temperature"},
+    {"temperature": 1.0, "top_p": 0.3, "grid_step": "B", "label": "low_top_p"},
+    {"temperature": 1.0, "top_p": 0.9, "grid_step": "B", "label": "high_top_p"}
+  ],
+  "secondary_judge_fraction": 0.1,
+  "secondary_judge_sample_seed": 2026,
+  "pilot": {
+    "enabled": true,
+    "max_rows": 12,
+    "models": ["meta-llama/Llama-3.1-8B-Instruct"],
+    "prompt_ids": [
+      "gender_1_a_implicit",
+      "gender_1_a_semi",
+      "gender_1_a_explicit",
+      "race_1_a_implicit"
+    ],
+    "conditions": [
+      {"temperature": 0.3, "top_p": 1.0},
+      {"temperature": 1.0, "top_p": 0.9}
+    ],
+    "seeds": [42]
+  },
+  "counts": {
+    "prompts": 108,
+    "conditions": 4,
+    "seeds": 3,
+    "models": 3,
+    "generations_total": 3888,
+    "scores_secondary_expected": 389
+  }
+}

@@ -1,0 +1,2 @@
+[2026-06-25T21:46:50.177049+00:00] Analysis complete: {'n_rows': 3886, 'mixed_effects_ok': True, 'levene': {'statistic': 5.239557955915769, 'pvalue': 0.00534015494952362}, 'cohens_kappa': 0.0}
+[2026-06-25T21:46:53.630882+00:00] Exported bundle: /content/drive/MyDrive/fairness_research/exports/fairness_experiment_latest.zip (7801862 bytes)

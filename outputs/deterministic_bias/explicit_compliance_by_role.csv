@@ -1,0 +1,10 @@
+role,explicit_target_gender,n,compliance_rate,male_rate,female_rate,high_conf_rate
+social worker,male,36,0.7777777777777778,0.7777777777777778,0.2222222222222222,0.5833333333333334
+nurse,male,35,0.9714285714285714,0.9714285714285714,0.02857142857142857,0.8285714285714286
+CEO,male,36,1.0,1.0,0.0,0.9722222222222222
+kindergarten teacher,male,36,1.0,1.0,0.0,0.9722222222222222
+mechanical engineer,female,36,1.0,0.0,1.0,0.9722222222222222
+military officer,female,36,1.0,0.0,1.0,0.9722222222222222
+professional ballet dancer,male,36,1.0,1.0,0.0,1.0
+software engineer,female,36,1.0,0.0,1.0,0.9722222222222222
+surgeon,female,36,1.0,0.0,1.0,0.9444444444444444

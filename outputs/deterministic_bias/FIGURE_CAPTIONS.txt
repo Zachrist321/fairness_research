@@ -1,0 +1,20 @@
+FIGURE CAPTIONS — paste under each figure in slides or report
+=============================================================
+
+Figure 1 — fig1_implicit_defaults_by_role.png
+Protagonist gender assignment in implicit role prompts (gender dimension, n=321 classifiable stories). Pink = female-coded protagonist; blue = male-coded protagonist. Female-stereotyped roles (nurse, teacher, ballet dancer) show near-universal female assignment. Male-stereotyped roles (surgeon, engineer, CEO) show predominantly female assignment despite traditional stereotypes — indicating an asymmetric female-protagonist default.
+
+Figure 2 — fig2_stereotype_aligned_by_condition.png
+Stereotype-aligned demographic defaulting rate by sampling condition (implicit + semi-explicit prompts, all models). Rates are stable across temperature and top-p settings (57.5%–60.9%), suggesting hyperparameters had limited effect on implicit bias in this task.
+
+Figure 3 — fig3_stereotype_aligned_by_model.png
+Stereotype-aligned defaulting rate by model (implicit + semi-explicit prompts). Mistral 7B showed the highest rate (69.5%), followed by Llama 3.1 8B (54.0%) and Qwen 2.5 7B (53.1%).
+
+Figure 4 — fig4_gender_share_by_tier.png
+Share of female-coded vs male-coded protagonists by prompt specificity tier. Both implicit and semi-explicit tiers show strong female protagonist defaulting. Explicit tier shifts distribution when gender is directly specified in the prompt.
+
+Figure 5 — fig5_explicit_compliance_by_role.png
+Compliance with explicit counter-stereotypical gender requests (e.g. "write about a male nurse"). Most roles show ≥97% compliance. Male social worker shows weakest compliance (78%).
+
+Figure 6 — fig6_model_condition_heatmap.png
+Stereotype-aligned defaulting rate (%) across model × sampling condition. Mistral consistently highest across all four conditions. No single hyperparameter setting dramatically reduces defaulting.

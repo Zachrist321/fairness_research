@@ -1,0 +1,4 @@
+prompt_tier,rows,evaluable,ambiguous,evaluable_rate
+explicit,324,323,1,0.9969135802469136
+implicit,324,321,3,0.9907407407407407
+semi,324,313,11,0.9660493827160493

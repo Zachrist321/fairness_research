@@ -1,0 +1,96 @@
+{
+  "format_version": "1.0",
+  "project": "fairness_research_stereotype_hyperparameters",
+  "experiment_version": "v1-scaled-3900",
+  "generated_at": "2026-06-27T18:55:46.625816+00:00",
+  "drive_root": "/Users/zach/python/fairness_research/research_experiment",
+  "phase": "judge_gemini",
+  "pilot_mode": false,
+  "last_run_key": "mistralai/Mistral-7B-Instruct-v0.3|occupation_1_a_explicit|1.0|0.9|123",
+  "progress": {
+    "experiment_version": "v1-scaled-3900",
+    "phase": "judge_gemini",
+    "generations_done": 3892,
+    "generations_total": 3888,
+    "scores_primary_done": 3886,
+    "scores_secondary_done": 388,
+    "embeddings_done": 3892,
+    "current_model": "mistralai/Mistral-7B-Instruct-v0.3",
+    "last_run_key": "mistralai/Mistral-7B-Instruct-v0.3|occupation_1_a_explicit|1.0|0.9|123",
+    "last_updated": "2026-06-27T16:53:48.957555+00:00",
+    "failures_logged": 14,
+    "scores_gemini_done": 50
+  },
+  "row_counts": {
+    "generations": 3892,
+    "scores_primary": 3886,
+    "scores_secondary": 388,
+    "embeddings": 3892,
+    "failures": 352
+  },
+  "remaining": {
+    "generations": 0,
+    "scores_primary": 6,
+    "embeddings": 0
+  },
+  "totals_expected": {
+    "prompts": 108,
+    "conditions": 4,
+    "seeds": 3,
+    "models": 3,
+    "generations_total": 3888,
+    "scores_secondary_expected": 389
+  },
+  "files": {
+    "generations": {
+      "exists": true,
+      "bytes": 8257053,
+      "path": "/Users/zach/python/fairness_research/research_experiment/checkpoints/generations.csv",
+      "rows": 3892
+    },
+    "scores_primary": {
+      "exists": true,
+      "bytes": 1558407,
+      "path": "/Users/zach/python/fairness_research/research_experiment/checkpoints/scores_primary.csv",
+      "rows": 3886
+    },
+    "scores_secondary": {
+      "exists": true,
+      "bytes": 166637,
+      "path": "/Users/zach/python/fairness_research/research_experiment/checkpoints/scores_secondary.csv",
+      "rows": 388
+    },
+    "embeddings": {
+      "exists": true,
+      "bytes": 713792,
+      "path": "/Users/zach/python/fairness_research/research_experiment/checkpoints/embeddings.csv",
+      "rows": 3892
+    },
+    "failures": {
+      "exists": true,
+      "bytes": 75411,
+      "path": "/Users/zach/python/fairness_research/research_experiment/checkpoints/failures.csv",
+      "rows": 352
+    },
+    "results_merged": {
+      "exists": true,
+      "bytes": 9619649,
+      "path": "/Users/zach/python/fairness_research/research_experiment/outputs/results_merged.csv",
+      "rows": 3886
+    },
+    "progress": {
+      "exists": true,
+      "bytes": 474,
+      "path": "/Users/zach/python/fairness_research/research_experiment/state/progress.json",
+      "rows": null
+    },
+    "experiment_config": {
+      "exists": true,
+      "bytes": 2014,
+      "path": "/Users/zach/python/fairness_research/research_experiment/experiment_config.json",
+      "rows": null
+    }
+  },
+  "how_to_resume": "Mount Drive, run Colab cells 1-2, then re-run the phase cell that matches 'phase' above. Completed run_keys in checkpoints/*.csv are skipped automatically.",
+  "how_to_share_with_assistant": "Run run_export.py or Colab Cell 12. Upload the zip OR the entire fairness_research/checkpoints/ folder. Include state/MANIFEST.json."
+}

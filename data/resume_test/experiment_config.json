@@ -1,0 +1,63 @@
+{
+  "experiment_version": "v1",
+  "drive_root": "/content/drive/MyDrive/fairness_research",
+  "models": {
+    "generators": [
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "mistralai/Mistral-7B-Instruct-v0.3",
+      "Qwen/Qwen2.5-7B-Instruct"
+    ],
+    "judge_primary": "meta-llama/Llama-3.1-8B-Instruct",
+    "judge_secondary": "mistralai/Mistral-7B-Instruct-v0.3",
+    "embedding": "sentence-transformers/all-mpnet-base-v2"
+  },
+  "prompts_file": "prompts/prompts_v1.csv",
+  "seeds": [42, 123, 456],
+  "generation": {
+    "max_new_tokens": 400,
+    "do_sample": true,
+    "load_in_4bit": true
+  },
+  "hyperparameter_grid": [
+    {"temperature": 0.1, "top_p": 1.0, "grid_step": "A"},
+    {"temperature": 0.3, "top_p": 1.0, "grid_step": "A"},
+    {"temperature": 0.7, "top_p": 1.0, "grid_step": "A"},
+    {"temperature": 1.0, "top_p": 1.0, "grid_step": "A"},
+    {"temperature": 1.5, "top_p": 1.0, "grid_step": "A"},
+    {"temperature": 1.8, "top_p": 1.0, "grid_step": "A"},
+    {"temperature": 1.0, "top_p": 0.3, "grid_step": "B"},
+    {"temperature": 1.0, "top_p": 0.6, "grid_step": "B"},
+    {"temperature": 1.0, "top_p": 0.9, "grid_step": "B"},
+    {"temperature": 1.0, "top_p": 1.0, "grid_step": "B"},
+    {"temperature": 0.3, "top_p": 0.3, "grid_step": "C"},
+    {"temperature": 0.3, "top_p": 0.9, "grid_step": "C"},
+    {"temperature": 1.5, "top_p": 0.3, "grid_step": "C"},
+    {"temperature": 1.5, "top_p": 0.9, "grid_step": "C"}
+  ],
+  "secondary_judge_fraction": 0.1,
+  "secondary_judge_sample_seed": 2026,
+  "pilot": {
+    "enabled": true,
+    "max_rows": 12,
+    "models": ["meta-llama/Llama-3.1-8B-Instruct"],
+    "prompt_ids": [
+      "gender_1_a_implicit",
+      "gender_1_a_semi",
+      "gender_1_a_explicit",
+      "race_1_a_implicit"
+    ],
+    "conditions": [
+      {"temperature": 0.7, "top_p": 1.0},
+      {"temperature": 1.0, "top_p": 0.9}
+    ],
+    "seeds": [42]
+  },
+  "counts": {
+    "prompts": 108,
+    "conditions": 14,
+    "seeds": 3,
+    "models": 3,
+    "generations_total": 13608,
+    "scores_secondary_expected": 1361
+  }
+}

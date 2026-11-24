@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Rebuttal - Submission 148</title>
+<style>
+  @page { size: A4; margin: 25mm 28mm; }
+  body {
+    font-family: "Times New Roman", Times, Georgia, serif;
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #000;
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 0 24px;
+  }
+  h1 { font-size: 16pt; text-align: center; margin-bottom: 6px; }
+  .meta { text-align: center; margin-bottom: 22px; }
+  .meta p { margin: 3px 0; }
+  .paper-title { font-style: italic; margin: 10px 0; }
+  h2 { font-size: 12pt; margin-top: 18px; margin-bottom: 6px; }
+  p { text-align: justify; margin: 0 0 10px 0; }
+  ul { margin: 6px 0 12px 22px; }
+  li { margin-bottom: 4px; }
+  .sign { margin-top: 22px; }
+  @media print {
+    body { margin: 0; max-width: none; padding: 0; }
+  }
+</style>
+</head>
+<body>
+  <h1>Rebuttal</h1>
+  <div class="meta">
+    <p>Submission 148 &mdash; PanAfriCon AI 2026</p>
+    <p class="paper-title">The Joint Effect of Prompt Specificity and Inference Hyperparameters on Stereotype Generation in Open-Source Large Language Models</p>
+    <p>Zerihun Ayele Chala (corresponding), Beakal Gizachew Assefa,<br>
+    Elefelious Getachew Belay, Tensae Aschalew Andualem</p>
+    <p>School of IT and Engineering, Addis Ababa University</p>
+  </div>
+
+  <p>We thank the Program Committee and Reviewer 1 for the constructive comments. Below we respond to each major comment and note where the camera-ready paper was revised.</p>
+
+  <h2>Comment 1</h2>
+  <p><em>Only three relatively small models are considered; the narrow selection limits the generalizability of the findings and should be broadened or justified.</em></p>
+  <p><strong>Response.</strong> We agree that restricting the study to mid-size models limits generalizability. We retain the three open instruction-tuned models (Llama 3.1 8B, Mistral 7B, Qwen 2.5 7B) because the treatment of interest is temperature and top-p, which must be set and verified directly at generation time. Closed APIs often hide or limit those settings. Keeping models in the 7B&ndash;8B range also made the full factorial design feasible (prompt tiers, four decoding conditions, three seeds, four demographic dimensions). In the camera-ready paper we justify this choice in Model Selection and state clearly in Limitations that the findings are scoped to mid-size open models and may not hold for larger open models or proprietary systems. Extending the design to larger models is left as future work.</p>
+
+  <h2>Comment 2</h2>
+  <p><em>The rationale for the chosen parameter settings, such as temperature, is not explained and should be stated.</em></p>
+  <p><strong>Response.</strong> We agree and have expanded the Hyperparameter Conditions section. The four settings were chosen to cover low and high randomness without a full temperature &times; top-p grid:</p>
+  <ul>
+    <li><em>T</em> = 0.3, top-<em>p</em> = 1.0: near-deterministic sampling</li>
+    <li><em>T</em> = 1.0, top-<em>p</em> = 0.3: narrow token pool</li>
+    <li><em>T</em> = 1.0, top-<em>p</em> = 0.9: common open-ended setting</li>
+    <li><em>T</em> = 1.5, top-<em>p</em> = 1.0: higher chance of low-probability tokens</li>
+  </ul>
+  <p>The camera-ready text states this rationale explicitly and retains the condition table. A separate gender temperature supplement remains a sensitivity analysis only.</p>
+
+  <h2>Comment 3</h2>
+  <p><em>The conclusion emphasizes that prompt design and model choice matter more than hyperparameters, but this claim requires stronger evidence than the current results provide.</em></p>
+  <p><strong>Response.</strong> We agree. The original comparative ranking overstated what the primary tests support. The camera-ready paper states that the primary hypothesis (tier-by-condition interaction) was not supported. We removed absolute ranking language from the abstract, discussion, and conclusion. Prompt-tier and model differences are reported as descriptive results within this study, not as a general claim that they always matter more than hyperparameters.</p>
+
+  <p>We hope these revisions address the reviewer concerns.</p>
+  <div class="sign">
+    <p>Respectfully,</p>
+    <p>Zerihun Ayele Chala<br>On behalf of the authors</p>
+  </div>
+</body>
+</html>

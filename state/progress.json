@@ -1,0 +1,14 @@
+{
+  "experiment_version": "v1-scaled-3900",
+  "phase": "judge_gemini",
+  "generations_done": 3892,
+  "generations_total": 3888,
+  "scores_primary_done": 3886,
+  "scores_secondary_done": 388,
+  "embeddings_done": 3892,
+  "current_model": "mistralai/Mistral-7B-Instruct-v0.3",
+  "last_run_key": "mistralai/Mistral-7B-Instruct-v0.3|occupation_1_a_explicit|1.0|0.9|123",
+  "last_updated": "2026-06-27T16:53:48.957555+00:00",
+  "failures_logged": 14,
+  "scores_gemini_done": 50
+}

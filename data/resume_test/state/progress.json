@@ -1,0 +1,10 @@
+{
+  "experiment_version": "v1",
+  "phase": "generation",
+  "generations_done": 1,
+  "scores_primary_done": 0,
+  "scores_secondary_done": 0,
+  "embeddings_done": 0,
+  "failures_logged": 0,
+  "last_updated": "2026-06-20T20:32:23.499741+00:00"
+}

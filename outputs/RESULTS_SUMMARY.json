@@ -1,0 +1,89 @@
+{
+  "experiment_version": "v1-scaled-3900",
+  "planned_generations": 3888,
+  "saved_generations": 3892,
+  "design_note": "108 prompts x 4 conditions x 3 seeds x 3 models",
+  "research_question": "Does the effect of inference hyperparameters on bias depend on prompt specificity?",
+  "primary_result": {
+    "analysis": "joint_effect_prompt_tier_x_sampling_condition",
+    "interaction_chi2": 2.95,
+    "interaction_dof": 7,
+    "interaction_p_value": 0.8894,
+    "interaction_significant": false,
+    "within_tier_spread_pp": {
+      "implicit": 8.0,
+      "semi": 9.7
+    },
+    "joint_table_pct": {
+      "implicit": {
+        "T=0.3_p=1.0": 56.2,
+        "T=1.0_p=0.3": 55.0,
+        "T=1.0_p=0.9": 63.0,
+        "T=1.5_p=1.0": 61.3
+      },
+      "semi": {
+        "T=0.3_p=1.0": 58.8,
+        "T=1.0_p=0.3": 63.6,
+        "T=1.0_p=0.9": 58.8,
+        "T=1.5_p=1.0": 53.9
+      }
+    },
+    "conclusion": "No statistically significant joint effect in this scaled four-condition design. Prompt tier and model choice dominated decoding settings."
+  },
+  "secondary_results": {
+    "explicit_bias_pct": 0.0,
+    "semi_explicit_bias_pct": 58.8,
+    "implicit_bias_pct": 58.9,
+    "mistral_bias_aligned_pct": 69.5,
+    "llama_bias_aligned_pct": 54.0,
+    "qwen_bias_aligned_pct": 53.1
+  },
+  "primary_figures": [
+    "outputs/figures/fig7_joint_effect_interaction.png",
+    "outputs/figures/fig8_joint_effect_by_model.png"
+  ],
+  "tiered_table": [
+    {
+      "bias_tier": "explicit_stereotype_language",
+      "metric": "rate",
+      "value": 0.0,
+      "n": 972,
+      "description": "Share of stories containing overt stereotype phrases"
+    },
+    {
+      "bias_tier": "implicit_occupation_gender",
+      "metric": "stereotype_aligned_rate_overall",
+      "value": 0.5887850467289719,
+      "n": 321,
+      "description": "Implicit prompts: protagonist gender matches role stereotype"
+    },
+    {
+      "bias_tier": "implicit_occupation_gender",
+      "metric": "female_role_to_female_protagonist",
+      "value": 0.9790209790209792,
+      "n": 143,
+      "description": "Female-stereotyped roles assigned female protagonist"
+    },
+    {
+      "bias_tier": "implicit_occupation_gender",
+      "metric": "male_role_to_male_protagonist",
+      "value": 0.2752808988764045,
+      "n": 178,
+      "description": "Male-stereotyped roles assigned male protagonist"
+    },
+    {
+      "bias_tier": "counter_stereotype_compliance",
+      "metric": "compliance_rate",
+      "value": 0.9721362229102168,
+      "n": 323,
+      "description": "Explicit counter-stereotypical gender requests honored"
+    },
+    {
+      "bias_tier": "counter_stereotype_compliance",
+      "metric": "non_compliance_rate",
+      "value": 0.0278637770897832,
+      "n": 323,
+      "description": "Explicit counter-stereotypical gender requests ignored"
+    }
+  ]
+}

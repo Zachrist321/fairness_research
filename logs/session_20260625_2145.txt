@@ -1,0 +1,2 @@
+[2026-06-25T21:45:07.950082+00:00] Embeddings done. total=3892
+[2026-06-25T21:45:10.312988+00:00] Exported bundle: /content/drive/MyDrive/fairness_research/exports/fairness_experiment_latest.zip (5104174 bytes)

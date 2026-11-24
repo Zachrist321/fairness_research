@@ -1,0 +1,86 @@
+{
+  "format_version": "1.0",
+  "project": "fairness_research_stereotype_hyperparameters",
+  "experiment_version": "v1",
+  "generated_at": "2026-06-20T20:59:20.599782+00:00",
+  "drive_root": "/Users/zach/python/fairness_research/data",
+  "phase": "setup",
+  "pilot_mode": true,
+  "last_run_key": null,
+  "progress": {
+    "experiment_version": "v1",
+    "phase": "setup",
+    "generations_done": 0,
+    "generations_total": 13608,
+    "scores_primary_done": 0,
+    "scores_secondary_done": 0,
+    "embeddings_done": 0
+  },
+  "row_counts": {
+    "generations": 1,
+    "scores_primary": 0,
+    "scores_secondary": 0,
+    "embeddings": 0,
+    "failures": 0
+  },
+  "remaining": {
+    "generations": "pilot_or_unknown",
+    "scores_primary": 1,
+    "embeddings": 1
+  },
+  "totals_expected": {
+    "prompts": 108,
+    "conditions": 14,
+    "seeds": 3,
+    "models": 3,
+    "generations_total": 13608,
+    "scores_secondary_expected": 1361
+  },
+  "files": {
+    "generations": {
+      "exists": true,
+      "rows": 1,
+      "bytes": 263,
+      "path": "/Users/zach/python/fairness_research/data/checkpoints/generations.csv"
+    },
+    "scores_primary": {
+      "exists": false,
+      "rows": 0,
+      "bytes": 0
+    },
+    "scores_secondary": {
+      "exists": false,
+      "rows": 0,
+      "bytes": 0
+    },
+    "embeddings": {
+      "exists": false,
+      "rows": 0,
+      "bytes": 0
+    },
+    "failures": {
+      "exists": false,
+      "rows": 0,
+      "bytes": 0
+    },
+    "results_merged": {
+      "exists": false,
+      "rows": 0,
+      "bytes": 0
+    },
+    "progress": {
+      "exists": true,
+      "rows": 8,
+      "bytes": 189,
+      "path": "/Users/zach/python/fairness_research/data/state/progress.json"
+    },
+    "experiment_config": {
+      "exists": true,
+      "rows": 62,
+      "bytes": 2060,
+      "path": "/Users/zach/python/fairness_research/data/experiment_config.json"
+    }
+  },
+  "how_to_resume": "Mount Drive, run Colab cells 1-2, then re-run the phase cell that matches 'phase' above. Completed run_keys in checkpoints/*.csv are skipped automatically.",
+  "how_to_share_with_assistant": "Run run_export.py or Colab Cell 12. Upload the zip OR the entire fairness_research/checkpoints/ folder. Include state/MANIFEST.json."
+}

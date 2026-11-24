@@ -1,0 +1,2 @@
+run_key,model_name,prompt_id,prompt_set_id,prompt_tier,demographic_dimension,prompt_text,temperature,top_p,seed,generated_text,token_count,word_count,refusal_flag,truncated_flag,timestamp
+test|a|0.7|1.0|42,test,a,a,implicit,gender,hi,0.7,1.0,42,hello,1,1,0,0,now

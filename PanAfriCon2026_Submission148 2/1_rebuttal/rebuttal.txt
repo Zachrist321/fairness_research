@@ -1,0 +1,37 @@
+Rebuttal
+Submission 148
+PanAfriCon AI 2026
+
+Title: The Joint Effect of Prompt Specificity and Inference Hyperparameters on Stereotype Generation in Open-Source Large Language Models
+
+Authors: Zerihun Ayele Chala (corresponding), Beakal Gizachew Assefa, Elefelious Getachew Belay, Tensae Aschalew Andualem
+Affiliation: School of IT and Engineering, Addis Ababa University
+
+We thank the Program Committee and Reviewer 1 for the constructive comments. Below we respond to each major comment and note where the camera-ready paper was revised.
+
+
+Comment 1. Only three relatively small models are considered; the narrow selection limits the generalizability of the findings and should be broadened or justified.
+
+Response: We agree that restricting the study to mid-size models limits generalizability. We retain the three open instruction-tuned models (Llama 3.1 8B, Mistral 7B, Qwen 2.5 7B) because the treatment of interest is temperature and top-p, which must be set and verified directly at generation time. Closed APIs often hide or limit those settings. Keeping models in the 7B-8B range also made the full factorial design feasible (prompt tiers, four decoding conditions, three seeds, four demographic dimensions). In the camera-ready paper we justify this choice in Model Selection and state clearly in Limitations that the findings are scoped to mid-size open models and may not hold for larger open models or proprietary systems. Extending the design to larger models is left as future work.
+
+
+Comment 2. The rationale for the chosen parameter settings, such as temperature, is not explained and should be stated.
+
+Response: We agree and have expanded the Hyperparameter Conditions section. The four settings were chosen to cover low and high randomness without a full temperature x top-p grid:
+- T=0.3, top-p=1.0: near-deterministic sampling
+- T=1.0, top-p=0.3: narrow token pool
+- T=1.0, top-p=0.9: common open-ended setting
+- T=1.5, top-p=1.0: higher chance of low-probability tokens
+The camera-ready text states this rationale explicitly and retains the condition table. A separate gender temperature supplement remains a sensitivity analysis only.
+
+
+Comment 3. The conclusion emphasizes that prompt design and model choice matter more than hyperparameters, but this claim requires stronger evidence than the current results provide.
+
+Response: We agree. The original comparative ranking overstated what the primary tests support. The camera-ready paper states that the primary hypothesis (tier-by-condition interaction) was not supported. We removed absolute ranking language from the abstract, discussion, and conclusion. Prompt-tier and model differences are reported as descriptive results within this study, not as a general claim that they always matter more than hyperparameters.
+
+
+We hope these revisions address the reviewer concerns.
+
+Respectfully,
+Zerihun Ayele Chala
+On behalf of the authors

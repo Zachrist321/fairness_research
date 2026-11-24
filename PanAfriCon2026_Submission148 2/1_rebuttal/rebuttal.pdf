@@ -1,0 +1,88 @@
+%PDF-1.4
+1 0 obj<< /Type /Catalog /Pages 2 0 R >>endobj
+2 0 obj<< /Type /Pages /Kids [4 0 R 6 0 R] /Count 2 >>endobj
+7 0 obj<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>endobj
+4 0 obj<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 3 0 R /Resources << /Font << /F1 7 0 R >> >> >>endobj
+6 0 obj<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 5 0 R /Resources << /Font << /F1 7 0 R >> >> >>endobj
+3 0 obj<< /Length 3251 >>stream
+BT /F1 11 Tf 50 770 Td 14 TL
+(Rebuttal) Tj
+T* (Submission 148) Tj
+T* (PanAfriCon AI 2026) Tj
+T* () Tj
+T* (Title: The Joint Effect of Prompt Specificity and Inference Hyperparameters on Stereotype) Tj
+T* (Generation in Open-Source Large Language Models) Tj
+T* () Tj
+T* (Authors: Zerihun Ayele Chala \(corresponding\), Beakal Gizachew Assefa, Elefelious Getachew) Tj
+T* (Belay, Tensae Aschalew Andualem) Tj
+T* (Affiliation: School of IT and Engineering, Addis Ababa University) Tj
+T* () Tj
+T* (We thank the Program Committee and Reviewer 1 for the constructive comments. Below we respond) Tj
+T* (to each major comment and note where the camera-ready paper was revised.) Tj
+T* () Tj
+T* () Tj
+T* (Comment 1. Only three relatively small models are considered; the narrow selection limits the) Tj
+T* (generalizability of the findings and should be broadened or justified.) Tj
+T* () Tj
+T* (Response: We agree that restricting the study to mid-size models limits generalizability. We) Tj
+T* (retain the three open instruction-tuned models \(Llama 3.1 8B, Mistral 7B, Qwen 2.5 7B\) because) Tj
+T* (the treatment of interest is temperature and top-p, which must be set and verified directly at) Tj
+T* (generation time. Closed APIs often hide or limit those settings. Keeping models in the 7B-8B) Tj
+T* (range also made the full factorial design feasible \(prompt tiers, four decoding conditions,) Tj
+T* (three seeds, four demographic dimensions\). In the camera-ready paper we justify this choice in) Tj
+T* (Model Selection and state clearly in Limitations that the findings are scoped to mid-size open) Tj
+T* (models and may not hold for larger open models or proprietary systems. Extending the design to) Tj
+T* (larger models is left as future work.) Tj
+T* () Tj
+T* () Tj
+T* (Comment 2. The rationale for the chosen parameter settings, such as temperature, is not) Tj
+T* (explained and should be stated.) Tj
+T* () Tj
+T* (Response: We agree and have expanded the Hyperparameter Conditions section. The four settings) Tj
+T* (were chosen to cover low and high randomness without a full temperature x top-p grid:) Tj
+T* (- T=0.3, top-p=1.0: near-deterministic sampling) Tj
+T* (- T=1.0, top-p=0.3: narrow token pool) Tj
+T* (- T=1.0, top-p=0.9: common open-ended setting) Tj
+T* (- T=1.5, top-p=1.0: higher chance of low-probability tokens) Tj
+T* (The camera-ready text states this rationale explicitly and retains the condition table. A) Tj
+T* (separate gender temperature supplement remains a sensitivity analysis only.) Tj
+T* () Tj
+T* () Tj
+T* (Comment 3. The conclusion emphasizes that prompt design and model choice matter more than) Tj
+T* (hyperparameters, but this claim requires stronger evidence than the current results provide.) Tj
+T* () Tj
+T* (Response: We agree. The original comparative ranking overstated what the primary tests support.) Tj
+T* (The camera-ready paper states that the primary hypothesis \(tier-by-condition interaction\) was) Tj
+T* (not supported. We removed absolute ranking language from the abstract, discussion, and) Tj
+T* (conclusion. Prompt-tier and model differences are reported as descriptive results within this) Tj
+T* (study, not as a general claim that they always matter more than hyperparameters.) Tj
+T* () Tj
+T* () Tj
+ET
+endstream
+endobj
+5 0 obj<< /Length 192 >>stream
+BT /F1 11 Tf 50 770 Td 14 TL
+(We hope these revisions address the reviewer concerns.) Tj
+T* () Tj
+T* (Respectfully,) Tj
+T* (Zerihun Ayele Chala) Tj
+T* (On behalf of the authors) Tj
+T* () Tj
+ET
+endstream
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000009 00000 n 
+0000000056 00000 n 
+0000000117 00000 n 
+0000000185 00000 n 
+0000000309 00000 n 
+0000000433 00000 n 
+0000003734 00000 n 
+trailer<< /Size 8 /Root 1 0 R >>
+startxref
+3975
+%%EOF

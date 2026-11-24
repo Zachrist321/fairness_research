@@ -1,0 +1,537 @@
+\begin{document}
+
+\title[Prompt Specificity and Inference Hyperparameters]{The Joint Effect of Prompt Specificity and Inference Hyperparameters on Stereotype Generation in Open-Source Large Language Models}
+
+%% Authors in order
+\author*[1]{\fnm{Zerihun Ayele} \sur{Chala}}\email{zerihun.gsr-0979-18@aau.edu.et}
+\author[1]{\fnm{Beakal Gizachew} \sur{Assefa}}\email{beakal.gizachew@aau.edu.et}
+\author[1]{\fnm{Elefelious Getachew} \sur{Belay}}\email{elefelious.getachew@aau.edu.et}
+\author[1]{\fnm{Tensae Aschalew} \sur{Andualem}}\email{tensae-gsr-3976-17@aau.edu.et}
+
+\affil*[1]{\orgdiv{School of IT and Engineering}, \orgname{Addis Ababa University}, \orgaddress{\city{Addis Ababa}, \country{Ethiopia}}}
+
+\abstract{Fairness tests of Large Language Models are mostly done by fixing the prompt tier and hyperparameters. End users, however, use different temperature and top-p values to prompt. Our study examined the joint effects of hyperparameter variations and prompt specificity on bias generation. 3,888 short stories across gender, race, age, and occupation were generated using three instruction based models (Llama 3.1 8B, Mistral 7B, Qwen 2.5 7B). Two tests examined implicit and semi-explicit prompt tiers across the four hyperparameter conditions. The first measured embedding similarity to check semantic consistency of outputs and the second measured stereotype consistent defaulting between gender and occupation. Neither test revealed a significant interaction of the two factors. We hypothesized that higher hyperparameter values would increase bias for specific prompt types. However, no significant interaction was observed. We also examined gender specific stories with different hyperparameter configurations. Implicit defaulting ranged from 55.0 to 63.0 percent. Semi-explicit defaulting ranged from 53.9 to 63.6 percent. The models didn't produce explicit stereotypes while gender is explicitly mentioned in the story. However, a significant amount of the stories were defaulted to stereotype consistent gender associations across both implicit and semi explicit prompting. Mistral showed the highest defaulting rate at 69.5 percent. Llama and Qwen each showed about 54 percent. The primary interaction hypothesis was not supported. Within this study, changing temperature and top-p produced only small or mixed shifts, while prompt tier and model differences were visible in the descriptive results. We therefore treat hyperparameter tuning as a limited lever here, not as proof that prompt design and model choice always matter more.}
+
+\keywords{stereotype generation, large language models, inference hyperparameters, temperature, top-p sampling, prompt specificity, fairness auditing, bias evaluation, open-ended generation}
+
+\maketitle
+
+\section{Introduction}
+
+Fairness assessment has not advanced at the same pace as the actual use of large language models. A vast amount of literature says that these systems can produce stereotyped and biased outputs. Esiobu et al. state that LLMs show demographic bias across twelve axes even after being tuned to align. Bianchi et al. report that implicit prompts exaggerate gender and racial bias. They also find that counter-stereotypical prompting has only a limited bias mitigation effect. These prior works were conducted under fixed prompts and one hyperparameter setting. Surveys of the field categorize evaluation methods without treating inference settings as a variable of direct interest. To our knowledge, no previous work has varied prompt tiers and hyperparameters together. These are the two factors that can be adjusted by an end developer.
+
+This gap matters because both factors vary in real-world use. End users submit prompts with very different levels of specificity. A prompt may consist only of a role, such as ``write about a nurse,'' or it may describe a fully named character with a stated identity. Developers also choose sampling temperature and top-p separately to balance creativity and consistency. Creative writing tools are usually run at higher settings. Enterprise tools are usually run at lower settings. This choice is typically made without regard to fairness. If bias depends on either factor, then measuring it with one fixed prompt form and one fixed decoding setting will misrepresent the bias produced by a deployed system for its actual users.
+
+We expected that higher temperature or broader top-p would increase stereotype consistent defaulting more under implicit prompts than under semi-explicit prompts. This would produce a significant interaction between prompt tier and decoding condition. A null result for this interaction would still be informative. It would suggest that decoding settings have only a minor effect on bias once prompt tier is held constant. That would shift the main site of intervention toward prompt design rather than inference configuration. We treat this as a real possibility rather than something to reject outright, since patterns within each tier may differ even when a global interaction test does not detect them. We return to this distinction in the results.
+
+Our work makes three contributions. First, it introduces a three-level prompt framework: implicit role only, semi-explicit neutral name, and explicit stated identity. This framework better captures the range of demographic detail that end users provide, rather than examining only one prompt form. Second, it presents a factorial experiment that combines these tiers with four decoding conditions across four demographic dimensions in 3,888 stories generated by three open-source instruction-tuned models. Our study uses both embedding similarity and deterministic pronoun-based coding instead of relying on a single bias measure. Third, it separates explicit stereotype language from implicit demographic defaulting and shows that the two do not behave in the same way. Surface-level pattern matching and an LLM judge detect almost no explicit stereotyping. Deterministic coding reveals substantial role-level defaulting that those methods largely miss. This indicates that fairness audits relying on judge-based or keyword detection alone may be underestimating bias in open-ended generation.
+
+%-----------------------------------------------------------------------
+\section{Literature Review}
+
+Large language models trained on large internet text dataset learn and often reveal the demographic stereotypes in their training data. Gallegos et al. (2023) provide a detailed survey of portrayal of social groups in a generated content and real world resource allocation by the generated outputs. Their study points that stereotypic bias appears at various levels, from token embeddings to open-ended outputs, and that no single metric captures all of its forms.
+
+From 500,000 generated narratives across five publicly available models, Shieh et al. (2024) found that models consistently underrepresented minority groups relative to the U.S. Census proportions. When these minority groups are represented, they are assigned to less prominent roles. In a shocking manner, this pattern held even when identity terms were entirely absent from the prompt, showing that stereotypic generation is not solely a product of explicit demographic prompting.
+
+Research has shown an increased interest in the effect of prompt construction on LLM bias. Cheng et al. (2023) proposed the Marked Personas methodology, based on the idea of markedness, which refers to the linguistic imbalance between explicitly identified and assumed-default demographic categories. By asking models to create personas for explicitly identified groups as well as default groups, they found that GPT-3.5 and GPT-4 showed more racial stereotyping than human-authored descriptions under the same prompts. Groups that were explicitly identified were more frequently depicted with stereotyped or exoticized language. This work directly motivates our prompt specificity taxonomy: the distinction between named and unnamed demographic framing is the core of the implicit versus explicit tier design.
+
+Islam (2026) found an increased disparity from using prompts that contain demographic contexts. Male and youth-targeted prompts produced more assertive framing, while female and senior targeted prompts produced warmer and more traditional themes.
+
+Kotek et al. (2024) analyzed protected group bias across gender, sexuality, religion, and race. They found that models not only reflected societal biases but increased them. Responses to queries about minority groups sometimes overcorrected through excessive diversity emphasis, which itself constituted a form of stereotyping. This is relevant because it shows that more explicit demographic framing in a prompt does not simply increase stereotype generation in a straight line.
+
+The inference hyperparameters that control how language models sample from their predicted token distributions, most commonly temperature and nucleus (top-p) sampling, have been studied for their effects on output quality and diversity. Their relationship to fairness outcomes has received less attention. Temperature scaling lowers or raises the distribution over tokens before sampling: low temperatures make the model more deterministic and repetitive, while high temperatures increase diversity at the cost of coherence. Nucleus sampling, introduced by Holtzman et al. (2020), restricts sampling to the smallest set of tokens whose combined probability exceeds a threshold, reducing the chance of very low-probability outputs.
+
+Arias et al. (2025) demonstrated through sensitivity analyses that the best hyperparameter settings differ markedly across models and tasks. This has clear implications for fairness assessment: a configuration optimized for output quality in one model may produce different behavior in another. Their study also found that hyperparameter selections influence the statistical characteristics of generated text in ways that depend on the model's learned patterns.
+
+Arias et al. (2025) situated nucleus sampling within the wider set of decoding strategies and offered context for how changes in temperature and top-p work. Because decoding effects depend on the task, it is important to test across different conditions rather than relying on a single default setting.
+
+Temperature and top-p are not independent. Temperature is applied first, altering the probability distribution over the vocabulary before softmax. Top-p truncation is then applied to that adjusted distribution. Under higher temperatures, more tokens are included in the sampling pool, including tokens with demographic associations that would otherwise remain below the threshold. A lower top-p value partly offsets this by reducing the pool again, but it does not fully undo the effect. Examining temperature and top-p separately, as most previous studies have done, gives only a partial view of how these two parameters interact in practice.
+
+\subsection{Hyperparameters and Bias: Direct Evidence}
+
+The most directly relevant prior work comes from Lee (2025a) and Lee and Jeon (2025b). Lee (2025a) studied homogeneity bias, the tendency to represent some demographic groups as more internally similar than others, in GPT-4 across a range of temperature and top-p settings. Three findings motivated the present study. First, homogeneity bias persisted across most configurations, with Black Americans and women represented more homogeneously than White Americans and men. Second, the relationship between hyperparameters and group representations was non-linear, especially at extreme values. Third, hyperparameter adjustments affected racial and gender bias differently: changes that reduced racial homogeneity bias had different effects on gender homogeneity bias.
+
+This showed that hyperparameter-bias relationships are not uniform across social categories, which raises the question of whether they are also not uniform across prompt types. Lee (2025a) concluded that hyperparameter tuning cannot fix homogeneity bias on its own, but did not examine whether the effect of hyperparameter adjustment changes depending on how the prompt is framed. That is the gap this study addresses.
+
+Lee and Jeon (2025b) tested whether token sampling uncertainty, the randomness introduced by temperature and top-p, is the main cause of homogeneity bias. Their findings indicated that homogeneity bias is more tied to the model's training-time representations than to sampling randomness. This matters for interpreting our results: where hyperparameter effects on bias exist, they likely work through the interaction between sampling and the model's pre-existing associations rather than through randomness alone.
+
+Dong et al. (2024) examined gender bias using an indirect probing approach and found that all tested models showed explicit and implicit gender bias even when no demographic terms appeared in the input. This parallels the implicit prompting condition in the present study. They also found that hyperparameter tuning was one of three effective strategies for reducing gender bias. However, their study did not vary prompt specificity, leaving open whether hyperparameter-based reduction works equally well across different levels of demographic framing.
+
+Pandey et al. (2026) analyzed implicit completion bias across different decoding settings and found a non-linear relationship with temperature: bias peaked at moderate temperature (T=0.3) and declined at higher values. Increasing top-p raised explicit bias while implicit bias stayed largely stable. The fact that explicit and implicit bias responded differently to the same parameter changes is preliminary evidence that hyperparameter effects may depend on the type of bias being measured, which is related to the interaction this study tested.
+
+Taken together, these studies establish that hyperparameters can shift bias levels in measurable ways, but they leave two questions open. First, all of this work studied either closed-source models or did not systematically control prompt specificity. Second, none of them crossed prompt framing with hyperparameter conditions in a single factorial design. This study fills that gap using open-source models where generation parameters are fully controlled.
+
+\subsection{Fairness Evaluation Frameworks and Their Limitations}
+
+Fairness evaluation benchmarks for generative language models have grown rapidly, but the field lacks consistency. Esiobu et al. (2023) compared six bias metrics across 12 demographic dimensions and five model families and found that the metrics do not agree with each other, capturing different aspects of bias that do not correlate. This parallels the argument that single-condition testing is incomplete. Demchak et al. (2024) identified a deeper issue: the classifier models used to score bias benchmarks carry their own biases, which can distort conclusions about model behavior.
+
+Torres et al. (2024) conducted the work closest to our prompt-specificity manipulation, finding that prompt-induced bias interacts with racial and gender dimensions in ways that fixed-condition tests do not capture. Their findings support the central motivation of this study: bias scores from fixed-condition tests may not generalize to other prompt framings.
+
+LangFair (Bouchard et al., 2025) and BiasFilter (Cheng et al., 2025) are recent tools for fairness evaluation of language models, but both operate within the same single-condition evaluation approach. LangFair provides practitioners with tools to evaluate bias and fairness risks for specific use cases, while BiasFilter addresses bias at inference time through real-time output filtering. Neither framework addresses the joint variation of prompt design and hyperparameter configuration that characterizes real-world deployment. The methodological contribution of this study is to test this joint variation as a factorial design rather than treating either axis as fixed.
+
+Robles et al. (2025) showed that stereotype generation is not limited to English-language contexts, finding similar patterns in Spanish-language outputs. Prompt-model interactions may vary across languages and cultures, a limitation this study acknowledges but does not address.
+
+The text-to-image literature provides supporting evidence for the role of prompt specificity in bias. Bianchi et al. (2023) found demographic stereotypes in text-to-image outputs regardless of whether the prompt named an identity, and found that mitigation strategies did not prevent this. AlDahoul et al. (2025) showed that AI-generated faces shaped gender stereotypes and contributed to racial homogenization. These findings show that the prompt specificity effect is not unique to text generation, which reinforces the importance of testing both implicit and explicit prompting conditions.
+
+\subsection{Research Gap and Theoretical Motivation}
+
+The literature reviewed above establishes two bodies of evidence: first, that prompt framing meaningfully affects stereotype generation in language models, with both implicit and explicit demographic grounding producing stereotypic outputs through different mechanisms; and second, that inference hyperparameters affect bias levels in ways that are non-linear, group-dependent, and not simply a product of sampling randomness. What the literature does not establish is whether these two effects interact, specifically whether the relationship between hyperparameters and bias changes depending on how the prompt is framed.
+
+If the hyperparameter-bias relationship depends on prompt specificity, as our theoretical reasoning and preliminary evidence suggest, then testing at a fixed default condition gives an incomplete picture of a model's bias profile.
+
+The expected pattern was that explicit prompts, by naming demographic identifiers directly, would anchor the model's generation to those tokens and reduce its sensitivity to changes in temperature or top-p. Implicit prompts, which provide no identity cues, would leave the model more susceptible to sampling parameter variation. Semi-explicit prompts were expected to fall between these two cases. This paper tests that prediction. Prior work on hyperparameter effects used closed-source models (Lee, 2025a; Pandey et al., 2026). This study applies the same question to open-source instruction-tuned models where sampling parameters are directly controlled, and adds prompt specificity as an explicit factor.
+
+%-----------------------------------------------------------------------
+\section{Methodology}
+
+\subsection{Experimental Design}
+
+The study used a factorial design with two main factors. The first factor was prompt specificity (three tiers). The second was inference hyperparameters (four conditions). Three open-source models and three random seeds were also included. Each model-prompt-condition pair was run three times with fixed seeds.
+
+The dataset contains 3,888 stories (108 prompts, four conditions, three seeds, three models). Each demographic dimension has 972 stories. Four pilot rows at temperature 0.7 were dropped. Section~\ref{sec:joint_effect} reports all primary tests on this dataset. Section~\ref{sec:gender_supplement} reports an extra gender-only temperature sweep. That sweep is not part of the primary tests.
+
+\subsection{Prompt Construction}
+
+Each dimension used nine scenarios at three specificity tiers. This produced 108 prompts (9 scenarios, 3 tiers, 4 dimensions). Gender prompts used jobs such as nurse and surgeon. Race prompts used job roles with culturally marked names in the semi-explicit tier. Age prompts used life-stage scenarios. Occupation prompts used male- or female-stereotyped job labels.
+
+The three prompt tiers were defined as follows:
+
+\begin{itemize}
+    \item \textbf{Tier 1 (Implicit).} The prompt names only the role or scenario. Example. ``Write a short story about a nurse working an overnight shift.'' No demographic identity is given.
+    \item \textbf{Tier 2 (Semi-explicit).} The prompt adds a neutral name. Example. ``Write a short story about Alex caring for patients during an overnight shift.'' The name gives a partial cue but does not state a demographic category.
+    \item \textbf{Tier 3 (Explicit).} The prompt states demographic identity directly. Example. ``Write a short story about a male nurse working an overnight shift.'' Explicit gender prompts request the counter-stereotypical gender.
+\end{itemize}
+
+All prompts are in \path{prompts/prompts_v1.csv}. Each scenario is matched across tiers. Only the demographic wording changes. The job or scene content stays the same.
+
+\subsection{Model Selection}
+
+Three open-source instruction-tuned models were selected. They represent a range of architectures and training approaches.
+
+\begin{itemize}
+    \item Llama 3.1 8B Instruct (\path{meta-llama/Llama-3.1-8B-Instruct}). Meta's widely used 8B parameter model.
+    \item Mistral 7B Instruct v0.3 (\path{mistralai/Mistral-7B-Instruct-v0.3}). Mistral AI's 7B instruction-following model.
+    \item Qwen 2.5 7B Instruct (\path{Qwen/Qwen2.5-7B-Instruct}). Alibaba's 7B model.
+\end{itemize}
+
+All three models were accessed through the Hugging Face model hub. We used mid-size open models (about 7B to 8B parameters) because the study needs direct control of temperature and top-p at generation time. Closed APIs often hide or limit those settings, which would weaken the hyperparameter tests. Keeping models in this size range also made the full factorial feasible (prompt tiers, four decoding conditions, three seeds, four dimensions). We do not claim the same results for much larger or proprietary models. That remains future work. Model revision hashes were not pinned, so exact token-level reproduction is not guaranteed if hub weights change later.
+
+\subsection{Hyperparameter Conditions}
+
+Four inference settings were chosen to cover low and high randomness without a full temperature and top-p grid. Low temperature (T=0.3, top-p=1.0) is near-deterministic. Low top-p (T=1.0, top-p=0.3) keeps sampling inside a small token set. High top-p (T=1.0, top-p=0.9) is a common open-ended setting. High temperature (T=1.5, top-p=1.0) allows more low-probability tokens. Nucleus sampling follows Holtzman et al. (2020). The range is in line with sensitivity work by Arias et al. (2025), and it stayed runnable on free GPU resources.
+
+\begin{table}[h]
+    \centering
+    \caption{Hyperparameter ranges and meanings associated to it}
+    \label{tab:hyperparams}
+    \small
+    \begin{tabularx}{\linewidth}{@{}l>{\centering\arraybackslash}c>{\centering\arraybackslash}c>{\raggedright\arraybackslash}X@{}}
+        \toprule
+        \textbf{Condition} & \textbf{Temp.} & \textbf{Top-p} & \textbf{Rationale} \\
+        \midrule
+        Low temperature  & 0.3 & 1.0 & Greedy-adjacent sampling; low stochasticity \\
+        Low top-p        & 1.0 & 0.3 & Narrow token pool; restricts vocabulary diversity \\
+        High top-p       & 1.0 & 0.9 & Wide token pool; standard open-ended generation \\
+        High temperature & 1.5 & 1.0 & High stochasticity; amplifies low-probability tokens \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+All generations used sampling with temperature and nucleus sampling enabled and a limit of 400 new tokens. Each condition used three random seeds (42, 123, 456). The extended gender grid added temperature values 0.5, 0.7, 1.0, and 1.3 at nucleus sampling probability 1.0, plus nucleus sampling values 0.3 and 0.9 at temperature 1.0.
+
+\subsection{Generation Procedure}
+
+Text generation was run on Google Colab using free GPU access. Models were loaded in 4-bit quantization to fit within the available GPU memory. Each generation saved its output immediately to checkpoints. This enabled safe checkpointing and resumption across multiple Colab sessions. Generation failures and refusals were logged separately. 143 failure events were recorded across the full run, a rate of 3.7 percent.
+
+\subsection{Bias Measurement}
+
+All primary tests use the same 3,888-story dataset. Two outcome measures were used. First, embedding stereotype similarity compared each story to dimension-specific reference sentences. This measure covers all dimensions. Second, deterministic coding checked whether the protagonist matched the scenario stereotype. Gender and occupation used pronouns and gendered nouns in the opening text. Age used life-stage keywords. Race used ethnicity keyword patterns. Gender and occupation coders covered 98 percent or more of stories. Race coverage on implicit and semi-explicit prompts was only 13.4 percent.
+
+The joint-effect tests used implicit and semi-explicit prompts only. Explicit prompts were excluded because they state identity directly. The outcome was either high embedding similarity (above the within-dimension median) or binary stereotype alignment from the deterministic coder.
+
+\begin{itemize}
+    \item Explicit bias rate measured direct stereotype language across all 3,888 stories.
+    \item Semi-explicit bias rate measured stereotype alignment on neutral-name prompts.
+    \item Implicit defaulting rate measured stereotype alignment on role-only prompts.
+\end{itemize}
+
+Deterministic coding coverage varied by dimension. Gender had 957 of 972 classifiable stories (98.5 percent). Occupation had 646 of 648 on implicit and semi-explicit prompts (99.7 percent). Age had 341 of 648 (52.6 percent). Race had 87 of 648 (13.4 percent). The pooled deterministic joint-effect test used gender and occupation only.
+
+\subsection{Statistical Analysis}
+
+The primary analysis tested whether prompt tier and hyperparameter conditions interact. Two chi-square tests were run on 2-by-4 tables. Test A used embedding high-similarity scores on all dimensions ($N = 2{,}588$). Test B used deterministic alignment on gender and occupation stories ($N = 1{,}280$). Secondary analyses report tier rates, model differences, and role-level gender patterns. The gender temperature supplement in Section~\ref{sec:gender_supplement} is exploratory and is not pooled with the primary tests.
+
+%-----------------------------------------------------------------------
+\section{Results}
+
+\subsection{Joint Effect of Prompt Specificity and Inference Hyperparameters}
+\label{sec:joint_effect}
+
+The study tested whether hyperparameters affect stereotype output differently across prompt tiers. Both tests used implicit and semi-explicit stories from the 3,888-story dataset. Table~\ref{tab:embedding_joint} shows embedding results. The text below gives deterministic results for gender and occupation combined.
+
+\begin{table}[h]
+    \centering
+    \caption{High embedding stereotype similarity rate (percent) by prompt tier and condition (all dimensions, $N = 2{,}588$ implicit and semi-explicit stories).}
+    \label{tab:embedding_joint}
+    \small
+    \begin{tabular}{@{}lcccc@{}}
+        \toprule
+        \textbf{Prompt tier}
+            & \makecell{\textbf{T=0.3}\\\textbf{p=1.0}}
+            & \makecell{\textbf{T=1.0}\\\textbf{p=0.3}}
+            & \makecell{\textbf{T=1.0}\\\textbf{p=0.9}}
+            & \makecell{\textbf{T=1.5}\\\textbf{p=1.0}} \\
+        \midrule
+        Implicit      & 50.8\% & 49.4\% & 52.2\% & 47.4\% \\
+        Semi-explicit & 51.9\% & 50.3\% & 49.1\% & 48.8\% \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Test A used embedding similarity on all dimensions. The chi-square test gave $\chi^2 = 2.39$, $df = 7$, and $p = 0.935$. Implicit and semi-explicit tiers both stayed near 50 percent across conditions. Within-tier spread was under 5 percentage points. The interaction was not significant.
+
+Test B used deterministic defaulting on gender and occupation stories. The chi-square test gave $\chi^2 = 1.83$, $df = 7$, and $p = 0.969$. Implicit rates ranged from 76.4 to 77.8 percent. Semi-explicit rates ranged from 75.2 to 81.0 percent. The interaction was not significant. Gender alone gave $\chi^2 = 2.95$ and $p = 0.889$ ($N = 634$). These results reject the primary hypothesis. Hyperparameters did not amplify bias more under implicit than semi-explicit prompts.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth,keepaspectratio]{paper_fig01.png}
+    \caption{Joint effect on embedding stereotype similarity (all dimensions pooled, implicit and semi-explicit prompts).}
+    \label{fig:1}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth,keepaspectratio]{paper_fig02.png}
+    \caption{Mean embedding stereotype similarity by demographic dimension and prompt tier (all 3,888 stories).}
+    \label{fig:2}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth,keepaspectratio]{paper_fig03.png}
+    \caption{Embedding high-similarity rate by tier and hyperparameter condition, stratified by dimension.}
+    \label{fig:3}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth,keepaspectratio]{paper_fig04.png}
+    \caption{Joint effect on deterministic stereotype-aligned defaulting (gender and occupation pooled).}
+    \label{fig:4}
+\end{figure}
+
+\subsection{Stereotype Rates by Dimension and Prompt Tier}
+
+Table~\ref{tab:tier_rates} shows deterministic stereotype-aligned rates for gender and occupation. Gender implicit and semi-explicit defaulting stayed near 59 percent. Occupation defaulting was about 95 percent because most occupation prompts used female-stereotyped jobs. Overt stereotype language appeared in 0.0 percent of all 3,888 stories.
+
+\begin{table}[h]
+    \centering
+    \caption{Stereotype-aligned defaulting rate (percent) by dimension and prompt tier (deterministic coder, gender and occupation).}
+    \label{tab:tier_rates}
+    \small
+    \begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}Xr@{}}
+        \toprule
+        \textbf{Bias tier} & \textbf{Definition} & \textbf{Rate} \\
+        \midrule
+        Explicit bias      & Overt stereotype language or discriminatory generalizations & 0.0\%  \\
+        Semi-explicit bias & Demographic defaulting under neutral-name prompts           & 58.8\% \\
+        Implicit bias      & Demographic defaulting under role-only prompts              & 58.9\% \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+Age and race coders had limited coverage on implicit and semi-explicit prompts (52.6 and 13.4 percent). They are not used in the primary pooled tests.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth,keepaspectratio]{paper_fig05.png}
+    \caption{Occupation dimension. Stereotype-aligned defaulting by prompt tier (deterministic coder).}
+    \label{fig:5}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth,keepaspectratio]{paper_fig06.png}
+    \caption{Gender dimension. Protagonist gender share by prompt tier.}
+    \label{fig:6}
+\end{figure}
+
+\subsection{Role-Level Implicit Defaults}
+
+Female-stereotyped jobs showed near-complete implicit defaulting. Male-stereotyped jobs showed weaker alignment. Table~\ref{tab:role_defaults} lists rates by role for gender implicit prompts.
+
+\begin{table}[h]
+    \centering
+    \caption{Stereotype-aligned defaulting rate by role (implicit prompts, gender dimension).}
+    \label{tab:role_defaults}
+    \small
+    \begin{tabular}{@{}lcc@{}}
+        \toprule
+        \textbf{Role} & \makecell{\textbf{Conventional}\\\textbf{gender}} & \makecell{\textbf{Stereotype-}\\\textbf{aligned rate}} \\
+        \midrule
+        Nurse                 & Female & 100\%  \\
+        Kindergarten teacher  & Female & 100\%  \\
+        Ballet dancer         & Female & 100\%  \\
+        Social worker         & Female & 91.4\% \\
+        Military officer      & Male   & 44.4\% \\
+        CEO                   & Male   & 30.6\% \\
+        Software engineer     & Male   & 23.5\% \\
+        Mechanical engineer   & Male   & 19.4\% \\
+        Surgeon               & Male   & 19.4\% \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Nurse, kindergarten teacher, and ballet dancer received female protagonists in 100 percent of classifiable implicit stories. Social worker received female protagonists in 91.4 percent. Military officer received a male protagonist in 44.4 percent. Surgeon and mechanical engineer each scored 19.4 percent stereotype-aligned.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth,keepaspectratio]{paper_fig07.png}
+    \caption{Gender dimension. Protagonist gender by role for implicit prompts.}
+    \label{fig:7}
+\end{figure}
+
+\subsection{Model Comparison}
+
+Defaulting rates differed across models on gender implicit and semi-explicit prompts. Mistral 7B had the highest rate at 69.5 percent. Llama 3.1 8B had 54.0 percent. Qwen 2.5 7B had 53.1 percent.
+
+\begin{table}[h]
+    \centering
+    \caption{Stereotype-aligned defaulting rate by model (implicit + semi-explicit prompts combined).}
+    \label{tab:model_rates}
+    \small
+    \begin{tabular}{@{}lc@{}}
+        \toprule
+        \textbf{Model} & \makecell{\textbf{Stereotype-aligned rate}\\\textbf{(implicit + semi)}} \\
+        \midrule
+        Mistral 7B Instruct v0.3 & 69.5\% \\
+        Llama 3.1 8B Instruct    & 54.0\% \\
+        Qwen 2.5 7B Instruct     & 53.1\% \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Mistral stayed highest across all four hyperparameter conditions. On implicit prompts Mistral ranged from 63 to 78 percent. Llama ranged from 48 to 63 percent. Qwen ranged from 44 to 58 percent. The gap tracked the model, not one sampling setting.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth,keepaspectratio]{paper_fig08.png}
+    \caption{Gender dimension. Stereotype-aligned defaulting rate by model.}
+    \label{fig:8}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth,keepaspectratio]{paper_fig09.png}
+    \caption{Gender dimension. Stereotype-aligned rate by tier and condition for each model.}
+    \label{fig:9}
+\end{figure}
+
+\begin{table}[h]
+    \centering
+    \caption{Bias alignment rates across gender and occupation.}
+    \label{tab:gender_occupation}
+    \small
+    \begin{tabular}{@{}lccc@{}}
+        \toprule
+        \textbf{Dimension} & \textbf{Implicit} & \makecell{\textbf{Semi-}\\\textbf{explicit}} & \textbf{Explicit} \\
+        \midrule
+        Gender     & 58.9\% & 58.8\% & 13.9\% \\
+        Occupation & 95.3\% & 96.3\% & 95.7\% \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Gender Temperature Supplement (Sensitivity Analysis)}
+\label{sec:gender_supplement}
+
+A follow-up run extended gender prompts to six temperature values at top-p = 1.0. The merged gender set has $1{,}828$ stories. This grid differs from the primary four-condition design and is reported separately.
+
+\begin{table}[h]
+    \centering
+    \caption{Gender supplement stereotype-aligned rate by temperature (merged gender dataset).}
+    \label{tab:supplement_temp}
+    \small
+    \begin{tabular}{@{}lc@{}}
+        \toprule
+        \textbf{Condition} & \makecell{\textbf{Stereotype-}\\\textbf{aligned rate}} \\
+        \midrule
+        T=0.3, top-p=1.0 & 57.5\% \\
+        T=1.0, top-p=0.3 & 59.2\% \\
+        T=1.0, top-p=0.9 & 60.9\% \\
+        T=1.5, top-p=1.0 & 57.7\% \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+On the supplement grid female marker share for implicit prompts fell from 81.8 percent at temperature 0.3 to 72.5 percent at temperature 1.5. Binary stereotype-aligned rates did not show a clear tier-specific temperature pattern. This supplement does not change the null primary result.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth,keepaspectratio]{paper_fig10.png}
+    \caption{Gender supplement. Stereotype-aligned rate across six temperatures by prompt tier.}
+    \label{fig:10}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth,keepaspectratio]{paper_fig11.png}
+    \caption{Gender supplement. Female marker proportion across six temperatures by prompt tier.}
+    \label{fig:11}
+\end{figure}
+
+\subsection{Supplementary Analyses}
+
+A separate LLM judge also scored stories on a 0-to-3 stereotype scale. Almost all scores were zero. This judge was not used for the primary results.
+
+\textbf{LLM judge scores.} The primary judge scored 3,882 stories. 3,861 received a score of 0. Eighteen received 1. Three received 2. None received 3. The mean score was 0.006. This matches the 0.0 percent overt stereotype language found by pattern matching. Judge scores stayed near zero on implicit and semi-explicit prompts for all three models. The deterministic coder found 54 to 70 percent gender defaulting in those same stories. The judge missed bias that appeared in pronouns and character framing.
+
+\textbf{Mixed-effects regression on judge scores.} A mixed-effects model on judge scores found small negative temperature-by-tier terms. These effects are negligible on a 0-to-3 scale and reflect the score floor. They should not be read as evidence that temperature reduces bias.
+
+\begin{table}[h]
+    \centering
+    \caption{Mixed-effects regression on LLM judge stereotype scores. Only interaction terms are shown; main effects had no standard errors reported due to model convergence at the floor.}
+    \label{tab:mixedeffects}
+    \small
+    \begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}Xcccc@{}}
+        \toprule
+        \textbf{Term} & \textbf{Coef.} & \textbf{SE} & \textbf{z} & \textbf{p} \\
+        \midrule
+        Temperature $\times$ tier[implicit] & $-0.027$ & 0.008 & $-3.48$ & $< 0.001$ \\
+        Temperature $\times$ tier[semi]     & $-0.018$ & 0.008 & $-2.24$ & 0.025     \\
+        Top-p $\times$ tier[implicit]       & $-0.021$ & 0.012 & $-1.78$ & 0.075     \\
+        Top-p $\times$ tier[semi]           & $-0.012$ & 0.012 & $-1.05$ & 0.292     \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\textbf{Levene test across prompt tiers.} Levene's test on judge score variance across the three prompt tiers returned $F = 5.24$, $p = 0.005$. Variance was higher in the explicit tier than in the implicit and semi-explicit tiers. This was expected. Explicit prompts requested counter-stereotypical characters. The rare non-zero judge scores appeared almost entirely in the explicit condition at high temperature. Implicit and semi-explicit prompts produced near-zero variance because the judge scored them at 0.
+
+\textbf{Embedding similarity.} Embedding similarity was computed for all 3,888 stories. This measure supports Test A in Table~\ref{tab:embedding_joint}. Model ordering on embeddings did not match ordering on gender defaulting. Both measures are reported for that reason.
+
+\textbf{Inter-rater reliability.} A secondary judge scored a 10 percent random subsample (388 stories). Raw percent agreement with the primary judge was 99.5 percent. Cohen's kappa was 0.0. The secondary judge scored all 388 subsample items as 0. The primary judge had marked 2 of those items as 1. With no positive cases from the secondary judge, kappa defaults to 0. Judge-based scoring was not a reliable signal in this experiment due to the floor effect.
+
+\textbf{Refusal rate.} Generation failures and refusals across all 3,892 runs totalled 143 events, a rate of 3.7 percent. By model, Llama 3.1 8B had 4.6 percent, Qwen 2.5 7B had 3.7 percent, and Mistral 7B had 2.7 percent. No single condition showed a refusal rate above 5 percent.
+
+%-----------------------------------------------------------------------
+\section{Discussion}
+
+The primary hypothesis predicted a significant tier-by-condition interaction. Both main tests returned non-significant results. The embedding test gave $\chi^2 = 2.39$ and $p = 0.935$. The deterministic test on gender and occupation gave $\chi^2 = 1.83$ and $p = 0.969$. The hypothesis was not supported.
+
+The gender supplement showed that female marker share drops as temperature rises on implicit prompts. Binary alignment rates did not show the same tier-specific pattern. Temperature may change pronoun wording without changing binary alignment enough to produce an interaction. The wider gender grid made the wording shift visible. It did not overturn the null result from the four-condition factorial test.
+
+Prompt tier strongly affected which bias type appeared. Explicit prompts produced 0.0 percent overt stereotype language. Implicit and semi-explicit gender prompts produced about 59 percent stereotype-aligned defaulting. Semi-explicit and implicit gender rates were nearly identical. Adding a neutral name did not reduce defaulting. Role context alone triggered demographic associations.
+
+Defaulting also differed by model. On gender implicit and semi-explicit prompts, Mistral reached 69.5 percent, Llama 54.0 percent, and Qwen 53.1 percent. Across the four hyperparameter conditions, within-model spreads were smaller than this model gap. That pattern is descriptive for these three mid-size models. It is not enough to conclude that model choice always matters more than hyperparameters in general. Larger models were not tested.
+
+The tiered analysis separates overt stereotype language from implicit defaulting. A single score would hide the gap between near-zero explicit language and about 60 percent implicit defaulting. The LLM judge failed here because 3,861 of 3,882 scores were zero. Deterministic coding replaced it for the main results. Instruction-tuned models rarely produce overt discriminatory text. They still assign demographic traits through character framing. Fairness audits must test implicit defaulting, not explicit language alone.
+
+%-----------------------------------------------------------------------
+\section{Limitations}
+
+Several limitations should be noted when interpreting these results. All primary tests use the 3,888 stories with four hyperparameter conditions. The gender supplement used a wider temperature grid and is reported separately. Deterministic coders are reliable for gender and occupation. Age and race coders had partial coverage and are descriptive only. Embedding similarity was the only full-coverage measure across all four dimensions.
+
+Gender coding used binary labels from English gendered markers. Gender-neutral stories were treated as ambiguous and excluded from rate calculations. Only binary characters were captured.
+
+The task was open-ended story generation. Bias may differ in dialogue, summarization, or question answering. Some of the limitations of this experiment are that sample stories generated are very small compared to typical tests so future research should do further experiment by generating stories to have a high confidence level in the samples in representing the population of stories that could be generated from using these models.
+
+Model weights were not pinned to specific Hugging Face revision hashes. Exact token reproduction is not guaranteed if weights change after the run.
+
+Models ran on Google Colab free GPUs with 4-bit quantization. Results may differ from full-precision runs on other hardware.
+
+Only mid-size open models were tested, so the findings may not hold for larger open models or closed proprietary systems.
+
+%-----------------------------------------------------------------------
+\section{Conclusion}
+
+This study tested whether hyperparameters and prompt specificity interact in stereotype generation. The factorial dataset has 3,888 stories across four demographic dimensions. Two primary tests found no significant tier-by-condition interaction. The primary hypothesis was not supported. In this design, temperature and top-p shifts were small or mixed. Prompt tier and model differences showed up in the rates we report, but we do not rank those factors as generally more important than hyperparameters beyond this study.
+
+All three models showed about 14 percent stereotype alignment on explicit counter-stereotypical gender prompts. The same models showed about 59 percent alignment on implicit and semi-explicit gender prompts. Nurse stories received female protagonists over 90 percent of the time. Surgeon and mechanical engineer stories rarely received male protagonists. These patterns held across models and hyperparameter conditions.
+
+The models suppressed overt discriminatory language. Stereotyped character framing was still used by the models. An audit that scans only explicit language would wrongly call these models unbiased. Temperature and top-p did little to move the roughly 59 percent implicit gender defaulting rate.
+
+Future work could finish the gender supplement grid, improve race and age coders, and study why Mistral defaulting exceeds Llama and Qwen.
+
+%-----------------------------------------------------------------------
+\begin{thebibliography}{99}
+\bibitem{aldahoul2025}
+AlDahoul, N., Rahwan, T., \& Zaki, Y. (2025). AI-generated faces influence gender stereotypes and racial homogenization. \textit{Scientific Reports}, 15(1), 14449.
+
+\bibitem{arias2025}
+Arias, E.\ G., Li, M., Heumann, C., \& A{\ss}enmacher, M. (2025). Decoding decoded: Understanding hyperparameter effects in open-ended text generation. In \textit{Proceedings of the 31st International Conference on Computational Linguistics} (pp.\ 9992--10020).
+
+\bibitem{basu2026}
+Basu, A., et al. (2026). Contextual StereoSet: Stress-testing bias alignment robustness in large language models. \textit{arXiv preprint}.
+
+\bibitem{bianchi2023}
+Bianchi, F., Kalluri, P., Durmus, E., Ladhak, F., Cheng, M., Nozza, D., \ldots{}, \& Caliskan, A. (2023). Easily accessible text-to-image generation amplifies demographic stereotypes at large scale. In \textit{Proceedings of the 2023 ACM Conference on Fairness, Accountability, and Transparency} (pp.\ 1493--1504).
+
+\bibitem{bouchard2025}
+Bouchard, D., et al. (2025). LangFair: A Python package for assessing bias and fairness in large language model use cases. \textit{arXiv preprint}.
+
+\bibitem{cheng2025}
+Cheng, M., et al. (2025). BiasFilter: An inference-time debiasing framework for large language models. \textit{arXiv preprint}.
+
+\bibitem{cheng2023}
+Cheng, M., Durmus, E., \& Jurafsky, D. (2023). Marked Personas: Using natural language prompts to measure stereotypes in language models. \textit{arXiv preprint}, \path{arXiv:2305.18189}.
+
+\bibitem{cho2023}
+Cho, J., Zala, A., \& Bansal, M. (2023). DALL-Eval: Probing the reasoning skills and social biases of text-to-image generation models. In \textit{Proceedings of the IEEE/CVF International Conference on Computer Vision} (pp.\ 3043--3054).
+
+\bibitem{demchak2024}
+Demchak, N., et al. (2024). Assessing bias in metric models for LLM open-ended generation bias benchmarks. \textit{arXiv preprint}.
+
+\bibitem{dhamala2023}
+Dhamala, J., Kumar, V., Gupta, R., Chang, K.\ W., \& Galstyan, A. (2023). An analysis of the effects of decoding algorithms on fairness in open-ended language generation. In \textit{2022 IEEE Spoken Language Technology Workshop (SLT)} (pp.\ 655--662). IEEE.
+
+\bibitem{dong2024}
+Dong, X., Wang, Y., Yu, P.\ S., \& Caverlee, J. (2024). Disclosure and mitigation of gender bias in LLMs. \textit{arXiv preprint}, \path{arXiv:2402.11190}.
+
+\bibitem{esiobu2023}
+Esiobu, D., et al. (2023). ROBBIE: Robust bias evaluation of large generative language models. \textit{arXiv preprint}.
+
+\bibitem{gallegos2023}
+Gallegos, I.\ O., et al. (2023). Bias and fairness in large language models: A survey. \textit{Computational Linguistics}.
+
+\bibitem{holtzman2020}
+Holtzman, A., Buys, J., Du, L., Forbes, M., \& Choi, Y. (2020). The curious case of neural text degeneration. In \textit{Proceedings of ICLR 2020}.
+
+\bibitem{islam2026}
+Islam, T. (2026). Who gets which message? Auditing demographic bias in LLM-generated targeted text. \textit{arXiv preprint}.
+
+\bibitem{kotek2024}
+Kotek, H., et al. (2024). Protected group bias and stereotypes in large language models. \textit{arXiv preprint}.
+
+\bibitem{lee2025a}
+Lee, M.\ H. (2025a). Examining the robustness of homogeneity bias to hyperparameter adjustments in GPT-4. \textit{arXiv preprint}, \path{arXiv:2501.02211}.
+
+\bibitem{lee2025b}
+Lee, M.\ H., \& Jeon, S. (2025b). Token sampling uncertainty does not explain homogeneity bias in large language models. \textit{arXiv preprint}, \path{arXiv:2501.19337}.
+
+\bibitem{luccioni2023}
+Luccioni, A.\ S., Akiki, C., Mitchell, M., \& Jernite, Y. (2023). Stable Bias: Analyzing societal representations in diffusion models. \textit{arXiv preprint}, \path{arXiv:2303.11408}.
+
+\bibitem{nadeem2021}
+Nadeem, M., Bethke, A., \& Reddy, S. (2021). StereoSet: Measuring stereotypical bias in pretrained language models. In \textit{Proceedings of ACL-IJCNLP 2021}.
+
+\bibitem{pandey2026}
+Pandey, A., et al. (2026). Dual-metric evaluation of social bias in large language models: Evidence from an underrepresented Nepali cultural context. \textit{arXiv preprint}.
+
+\bibitem{robles2025}
+Robles, M., Bernal, C., Raigoso, D., \& Rubio, M.\ D. (2025). SESGO: Spanish evaluation of stereotypical generative outputs. In \textit{Proceedings of the AAAI/ACM Conference on AI, Ethics, and Society} (Vol.\ 8, No.\ 3, pp.\ 2214--2226).
+
+\bibitem{shi2024}
+Shi, C., et al. (2024). A thorough examination of decoding methods in the era of LLMs. \textit{arXiv preprint}.
+
+\bibitem{shieh2024}
+Shieh, E., et al. (2024). Intersectional biases in narratives produced by open-ended prompting of generative language models. \textit{Nature Communications}.
+
+\bibitem{torres2024}
+Torres, N., et al. (2024). A comprehensive analysis of gender, racial, and prompt-induced biases in large language models. \textit{International Journal of Data Science and Analytics}.
+
+\bibitem{zollo2025}
+Zollo, T., Rajaneesh, N., Zemel, R., Gillis, T., \& Black, E. (2025). Towards effective discrimination testing for generative AI. In \textit{Proceedings of the 2025 ACM Conference on Fairness, Accountability, and Transparency} (pp.\ 1028--1047).
+
+\end{thebibliography}
+
+\end{document}

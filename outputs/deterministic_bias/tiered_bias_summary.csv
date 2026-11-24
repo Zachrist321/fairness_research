@@ -1,0 +1,7 @@
+bias_tier,metric,value,n,description
+explicit_stereotype_language,rate,0.0,972,Share of stories containing overt stereotype phrases
+implicit_occupation_gender,stereotype_aligned_rate_overall,0.5887850467289719,321,Implicit prompts: protagonist gender matches role stereotype
+implicit_occupation_gender,female_role_to_female_protagonist,0.9790209790209791,143,Female-stereotyped roles assigned female protagonist
+implicit_occupation_gender,male_role_to_male_protagonist,0.2752808988764045,178,Male-stereotyped roles assigned male protagonist
+counter_stereotype_compliance,compliance_rate,0.9721362229102167,323,Explicit counter-stereotypical gender requests honored
+counter_stereotype_compliance,non_compliance_rate,0.02786377708978327,323,Explicit counter-stereotypical gender requests ignored

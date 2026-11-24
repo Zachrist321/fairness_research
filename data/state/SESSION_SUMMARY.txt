@@ -1,0 +1,29 @@
+FAIRNESS RESEARCH — SESSION SUMMARY
+==================================================
+Updated: 2026-06-20T20:59:20.599782+00:00
+Phase: setup
+Pilot mode: True
+
+ROW COUNTS (what is saved on Drive):
+  generations:      1
+  scores_primary:   0
+  scores_secondary:0
+  embeddings:       0
+  failures:         0
+
+REMAINING WORK:
+  generations:      pilot_or_unknown
+  scores_primary:   1
+  embeddings:       1
+
+Last completed run_key: None
+
+FILES ON DRIVE:
+  generations: 1 rows (263 bytes)
+  progress: 8 rows (189 bytes)
+  experiment_config: 62 rows (2060 bytes)
+
+TO SHARE WITH YOUR ASSISTANT:
+  1. Run: python run_export.py  (or Colab Cell 12)
+  2. Download: exports/fairness_experiment_latest.zip
+  3. Upload that zip in chat — assistant reads MANIFEST.json + CSVs immediately

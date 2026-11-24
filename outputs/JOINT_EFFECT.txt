@@ -1,0 +1,33 @@
+JOINT EFFECT ANALYSIS - prompt specificity x inference hyperparameters
+======================================================================
+PRIMARY RESEARCH QUESTION:
+Does the effect of inference hyperparameters on bias DEPEND ON prompt specificity?
+
+Metric: stereotype-aligned demographic defaulting rate (%), gender subset.
+Tiers: implicit and semi (explicit prompts state gender — excluded from defaulting interaction).
+
+Joint table (rows = prompt tier, cols = sampling condition), % stereotype-aligned:
+
+cond        T=0.3\np=1.0 T=1.0\np=0.3 T=1.0\np=0.9 T=1.5\np=1.0
+prompt_tier                                                    
+implicit           56.25         55.0    62.962963        61.25
+semi               58.75    63.636364        58.75    53.947368
+
+Within-tier spread across conditions (max - min, percentage points):
+  implicit: 8.0 pp
+  semi: 9.7 pp
+
+Chi-square (tier×condition vs aligned): chi2=2.95, dof=7, p=0.8894
+Interaction is not statistically significant (p>0.05).
+
+JOINT-EFFECT CONCLUSION:
+In this scaled four-condition factorial design, prompt specificity and inference
+hyperparameters did NOT show a statistically significant joint (interaction) effect
+on gender defaulting. Prompt tier set the overall bias level; hyperparameters shifted
+it only modestly (~8–10 pp) without reversing the tier pattern. Model choice (Mistral
+highest) was consistent across tier×condition cells. A broader hyperparameter grid
+may be needed to detect finer interactions.
+
+Figures:
+  - figures/fig7_joint_effect_interaction.png
+  - figures/fig8_joint_effect_by_model.png

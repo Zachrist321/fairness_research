@@ -1,0 +1,23 @@
+                      Mixed Linear Model Regression Results
+=================================================================================
+Model:                   MixedLM       Dependent Variable:       stereotype_score
+No. Observations:        3886          Method:                   REML            
+No. Groups:              108           Scale:                    0.0073          
+Min. group size:         35            Log-Likelihood:           inf             
+Max. group size:         37            Converged:                Yes             
+Mean group size:         36.0                                                    
+---------------------------------------------------------------------------------
+                                       Coef.  Std.Err.   z    P>|z| [0.025 0.975]
+---------------------------------------------------------------------------------
+Intercept                               0.000                                    
+C(prompt_tier)[T.implicit]              0.000                                    
+C(prompt_tier)[T.semi]                  0.000                                    
+temperature                             0.011                                    
+temperature:C(prompt_tier)[T.implicit] -0.027    0.008 -3.482 0.000 -0.043 -0.012
+temperature:C(prompt_tier)[T.semi]     -0.018    0.008 -2.242 0.025 -0.033 -0.002
+top_p                                   0.003                                    
+top_p:C(prompt_tier)[T.implicit]       -0.021    0.012 -1.783 0.075 -0.043  0.002
+top_p:C(prompt_tier)[T.semi]           -0.012    0.012 -1.053 0.292 -0.035  0.010
+temperature:top_p                       0.014                                    
+Group Var                               0.000                                    
+=================================================================================
